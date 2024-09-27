@@ -2,7 +2,7 @@ import sys
 import sqlite3
 from PyQt6.QtWidgets import QApplication, QVBoxLayout, QLabel, QWidget, QGridLayout, \
     QLineEdit, QPushButton, QMainWindow, QTableWidget, QTableWidgetItem, QDialog, \
-    QVBoxLayout, QComboBox
+    QVBoxLayout, QComboBox, QToolBar
 from PyQt6.QtGui import QIcon, QAction
 from PyQt6.QtCore import Qt
 
@@ -12,21 +12,22 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("Student Management System")
         self.setWindowIcon(QIcon.fromTheme("system-search"))
-        self.setGeometry(370, 150, 640, 480)
+        # self.setGeometry(370, 150, 640, 480)
+        self.setMinimumSize(800,600)
         
         # Set the menu bar
         file_menu_item = self.menuBar().addMenu("&File")
         help_menu_item = self.menuBar().addMenu("&Help")
         search_menu_item = self.menuBar().addMenu("&Search")
         # Set action for the file menu
-        add_student_action = QAction("Add Student", self)
+        add_student_action = QAction(QIcon("icons/add.png"),"Add Student", self)
         add_student_action.triggered.connect(self.insert)
         file_menu_item.addAction(add_student_action)
         # Set action for the help menu
         about_action = QAction("About", self)
         help_menu_item.addAction(about_action)
         # Set action for the search menu
-        search_action = QAction("Search", self)
+        search_action = QAction(QIcon("icons/search.png"), "Search", self)
         search_action.triggered.connect(self.search_student)
         search_menu_item.addAction(search_action)
         
@@ -39,6 +40,13 @@ class MainWindow(QMainWindow):
         self.table.verticalHeader().setVisible(False)
         self.setCentralWidget(self.table)
         
+        # Create toolbar and add toolbar element
+        toolbar = QToolBar()
+        toolbar.setMovable(True)
+        self.addToolBar(toolbar)
+        
+        toolbar.addAction(add_student_action)
+        toolbar.addAction(search_action)
         
     def load_data(self):
         connection = sqlite3.connect("database.db")
