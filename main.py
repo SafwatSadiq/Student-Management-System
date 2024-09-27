@@ -25,6 +25,7 @@ class MainWindow(QMainWindow):
         file_menu_item.addAction(add_student_action)
         # Set action for the help menu
         about_action = QAction("About", self)
+        about_action.triggered.connect(self.about)
         help_menu_item.addAction(about_action)
         # Set action for the search menu
         search_action = QAction(QIcon("icons/search.png"), "Search", self)
@@ -69,8 +70,7 @@ class MainWindow(QMainWindow):
         
         self.statusbar.addWidget(edit_button)
         self.statusbar.addWidget(delete_button)
-        
-        
+              
     def load_data(self):
         connection = sqlite3.connect("database.db")
         result = connection.execute("SELECT * FROM students")
@@ -80,8 +80,7 @@ class MainWindow(QMainWindow):
             for column_number, data in enumerate(row_data):
                 self.table.setItem(row_number, column_number, QTableWidgetItem(str(data)))
         connection.close()
-        
-    
+         
     def edit(self):
         dialog = EditDialog()
         dialog.exec()
@@ -90,7 +89,10 @@ class MainWindow(QMainWindow):
         dialog = DeleteDialog()
         dialog.exec()
     
-    
+    def about(self):   
+        dialog = AboutDialog()
+        dialog.exec()
+        
     def insert(self):
         dialog = InsertDialog()
         dialog.exec()
@@ -99,6 +101,23 @@ class MainWindow(QMainWindow):
         dialog = SearchDialog()
         dialog.exec()
         
+
+class AboutDialog(QMessageBox):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("About")  
+        content = """
+Student Management System
+----------------------------------------------------------------
+Version - 1.0
+----------------------------------------------------------------
+    This app was created by Safwat Sadiq during a course.
+    Feel Free to modify it!
+----------------------------------------------------------------
+        """
+        self.setText(content)
+        self.setWindowIcon(QIcon.fromTheme("help-about"))
+
 
 class EditDialog(QDialog):
     def __init__(self):
