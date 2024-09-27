@@ -7,6 +7,15 @@ from PyQt6.QtGui import QIcon, QAction
 from PyQt6.QtCore import Qt
 
 
+class DataBaseConnection:
+    def __init__(self, database_file='database.db'):
+        self.database_file = database_file
+        
+    def connect(self):
+        connection = sqlite3.connect(self.database_file)
+        return connection
+
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -72,7 +81,7 @@ class MainWindow(QMainWindow):
         self.statusbar.addWidget(delete_button)
               
     def load_data(self):
-        connection = sqlite3.connect("database.db")
+        connection = DataBaseConnection().connect()
         result = connection.execute("SELECT * FROM students")
         self.table.setRowCount(0)
         for row_number, row_data in enumerate(result):
@@ -160,7 +169,7 @@ class EditDialog(QDialog):
         self.setLayout(layout)
         
     def update_student(self):
-        connection = sqlite3.connect("database.db")
+        connection = DataBaseConnection().connect()
         cursor = connection.cursor()
         
         cursor.execute("UPDATE students SET name = ?, course = ?, mobile = ? WHERE id = ?",
@@ -202,7 +211,7 @@ class DeleteDialog(QDialog):
         # Get id from selected row
         self.student_id = window.table.item(index, 0).text()
         
-        connection = sqlite3.connect("database.db")
+        connection = DataBaseConnection().connect()
         cursor = connection.cursor()
         
         cursor.execute("DELETE FROM students WHERE id = ?", (self.student_id, ))
@@ -257,7 +266,7 @@ class InsertDialog(QDialog):
         course = self.course_name.itemText(self.course_name.currentIndex())
         mobile = self.mobile.text()
         
-        connection = sqlite3.connect("database.db")
+        connection = DataBaseConnection().connect()
         cursor = connection.cursor()
         cursor.execute("INSERT INTO students (name, course, mobile) VALUES (?, ?, ?)",
                        (name, course, mobile))
@@ -293,13 +302,12 @@ class SearchDialog(QDialog):
     def search_student(self):
         name = self.student_name.text()
         
-        # connection = sqlite3.connect("database.db")
+        # connection = DataBaseConnection().connect()
         # cursor = connection.cursor()
         # result = cursor.execute("SELECT * FROM students WHERE name=?", (name,))
         # rows = list(result)
         items = window.table.findItems(name, Qt.MatchFlag.MatchFixedString)
         for item in items:
-            print(item)
             window.table.item(item.row(), 1).setSelected(True)
         
         # cursor.close()
